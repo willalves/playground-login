@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+    nodejs-app:
+        build:
+          context: ./nodedocker_app
+        container_name: nodejsserver
+        hostname: pllogin
+        ports:
+            - "3001:3001" 
+        networks:
+            - playground-login
+
+        depends_on:
+            - mongo
+    mongo:
+        container_name: mongo
+        image: mongo
+        volumes:
+            - ./data:/data/db
+        ports:
+            - "27017:27017" 
+        networks:
+            - playground-login 
+    nginx:
+        build:
+          context: ./nginx
+        container_name: nginx
+        hostname: nginx
+        ports:
+            - "80:80" 
+        depends_on:
+            - nodejs-app
+        networks:
+            - playground-login
+
+networks:
+  playground-login:
+    external: true
